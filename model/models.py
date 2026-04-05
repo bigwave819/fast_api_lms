@@ -52,27 +52,21 @@ class ExamType(str, enum.Enum):
 
 
 class UserRole(str, enum.Enum):
-    platform_admin = "platform_admin"
-    director       = "director"
-    teacher        = "teacher"
-    student        = "student"
+    Platform_admin = "platform_admin"
+    Director       = "director"
+    Teacher        = "teacher"
+    Student        = "student"
 
 
 class Gender(str, enum.Enum):
     male   = "male"
     female = "female"
-    other  = "other"
 
 
 class ContentType(str, enum.Enum):
     video = "video"
     pdf   = "pdf"
     text  = "text"
-
-
-# ---------------------------------------------------------------------------
-# Mixins
-# ---------------------------------------------------------------------------
 
 class TimestampMixin:
     """Adds created_at and updated_at to any model."""

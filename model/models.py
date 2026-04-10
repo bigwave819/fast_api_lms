@@ -9,7 +9,7 @@ from datetime import datetime, date
 from typing import Optional, List
 
 from sqlalchemy import (
-    Column, String, Boolean, Integer, Decimal,
+    Column, String, Boolean, Integer,DECIMAL as Decimal,
     ForeignKey, Text, Date, Enum as SAEnum,
     UniqueConstraint, Index
 )
@@ -18,13 +18,15 @@ from sqlalchemy.orm import relationship, DeclarativeBase
 from sqlalchemy.sql import func
 from sqlalchemy import DateTime
 
+from core.database import Base
+
 
 # ---------------------------------------------------------------------------
 # Base
 # ---------------------------------------------------------------------------
 
-class Base(DeclarativeBase):
-    pass
+# class Base(DeclarativeBase):
+#     __allow_unmapped__ = True
 
 
 # ---------------------------------------------------------------------------

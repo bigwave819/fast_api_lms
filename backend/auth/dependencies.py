@@ -64,7 +64,7 @@ async def get_current_director(
 ) -> Director:
     payload = decode_token(credentials.credentials)
 
-    if payload.get("role") != UserRole.director:
+    if payload.get("role") != UserRole.Director:
         raise HTTPException(status_code=403, detail="Directors only")
 
     director = await db.get(Director, uuid.UUID(payload["sub"]))
@@ -80,7 +80,7 @@ async def get_current_admin(
 ) -> PlatformAdmin:
     payload = decode_token(credentials.credentials)
 
-    if payload.get("role") != UserRole.platform_admin:
+    if payload.get("role") != UserRole.Platform_admin:
         raise HTTPException(status_code=403, detail="Platform admins only")
 
     admin = await db.get(PlatformAdmin, uuid.UUID(payload["sub"]))

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { useRouter } from "next/navigation"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
@@ -17,8 +18,16 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>
 
+const ROLE_REDIRECTS: Record<string, string> = {
+  director:       "/director/dashboard",
+  teacher:        "/teacher/dashboard",
+  platform_admin: "/admin/dashboard",
+}
+
 function LoginComponent() {
   const [showPassword, setShowPassword] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
+  const router = useRouter()
 
   const {
     register,
@@ -29,18 +38,39 @@ function LoginComponent() {
   })
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log("Form Data:", data)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    setServerError(null)
+
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      setServerError(err.detail ?? "Something went wrong. Please try again.")
+      return
+    }
+
+    const { role } = await res.json()
+    const destination = ROLE_REDIRECTS[role] ?? "/"
+    router.push(destination)
   }
 
   return (
     <Card className="max-w-md w-full mx-auto p-6 space-y-5 shadow-xl border border-blue-100">
-      
       <CardTitle className="text-2xl font-bold text-center text-blue-600">
         Welcome Back
       </CardTitle>
 
       <CardContent className="space-y-4">
+
+        {/* Server error banner */}
+        {serverError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+            {serverError}
+          </div>
+        )}
 
         {/* Email */}
         <div>
@@ -50,9 +80,7 @@ function LoginComponent() {
             className="focus:ring-2 focus:ring-blue-500"
           />
           {errors.email && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.email.message}
-            </p>
+            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
           )}
         </div>
 
@@ -65,9 +93,7 @@ function LoginComponent() {
             className="focus:ring-2 focus:ring-blue-500"
           />
           {errors.password && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.password.message}
-            </p>
+            <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
           )}
         </div>
 

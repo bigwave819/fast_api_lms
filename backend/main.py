@@ -14,15 +14,9 @@ Run:
 """
 
 import os
-import sys
 import time
 import logging
-import asyncio
 from contextlib import asynccontextmanager
-
-# Fix for Windows asyncpg SSL hang
-if sys.platform == 'win32':
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware

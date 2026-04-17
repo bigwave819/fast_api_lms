@@ -13,7 +13,7 @@ export default async function DirectorLayout({ children }: { children: React.Rea
   return (
     <div className="flex min-h-screen">
       <Sidebar role="director" name={payload.name ?? "Director"} />
-      <main className="flex-1 bg-blue-50">{children}</main>
+      <main className="flex-1">{children}</main>
     </div>
   )
 }

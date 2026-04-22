@@ -48,7 +48,7 @@ async def get_current_teacher(
 ) -> Teacher:
     payload = decode_token(credentials.credentials)
 
-    if payload.get("role") != UserRole.teacher:
+    if payload.get("role") != UserRole.Teacher:
         raise HTTPException(status_code=403, detail="Teachers only")
 
     teacher = await db.get(Teacher, uuid.UUID(payload["sub"]))

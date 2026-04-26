@@ -2,46 +2,35 @@
 
 import { useMemo, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import type { ClassAssignmentDetail } from "@/types/teacher"
 
-// subject color
 const SUBJECT_COLORS = [
   "#0d9488","#7c3aed","#db2777",
   "#d97706","#2563eb","#16a34a",
   "#dc2626","#0891b2",
 ]
+
 function subjectColor(name: string) {
   const idx = name.split("").reduce((a, c) => a + c.charCodeAt(0), 0) % SUBJECT_COLORS.length
   return SUBJECT_COLORS[idx]
 }
 
-// group assignments → one card per class
 function groupByClass(assignments: ClassAssignmentDetail[]) {
-  const map = new Map<string, {
-    classId:    string
-    className:  string
-    subjects:   string[]
-  }>()
+  const map = new Map<string, { classId: string; className: string; subjects: string[] }>()
   for (const a of assignments) {
     if (!map.has(a.class_id)) {
-      map.set(a.class_id, {
-        classId:   a.class_id,
-        className: a.class_name,
-        subjects:  [],
-      })
+      map.set(a.class_id, { classId: a.class_id, className: a.class_name, subjects: [] })
     }
     map.get(a.class_id)!.subjects.push(a.subject_name)
   }
   return Array.from(map.values())
 }
 
-export function ClassesListClient({
-  assignments,
-}: {
-  assignments: ClassAssignmentDetail[]
-}) {
+export function ClassesListClient({ assignments }: { assignments: ClassAssignmentDetail[] }) {
   const [search, setSearch] = useState("")
+  const router = useRouter()
   const grouped = useMemo(() => groupByClass(assignments), [assignments])
 
   const filtered = useMemo(() => {
@@ -85,8 +74,7 @@ export function ClassesListClient({
       {filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl
                         border border-dashed border-[#e7e5e4]">
-          <div className="w-10 h-10 rounded-full bg-[#f0fdfa] flex items-center
-                          justify-center mb-3">
+          <div className="w-10 h-10 rounded-full bg-[#f0fdfa] flex items-center justify-center mb-3">
             <svg className="w-5 h-5 text-[#0d9488]" fill="none"
               viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round"
@@ -105,74 +93,74 @@ export function ClassesListClient({
         {filtered.map((cls, i) => {
           const primary = subjectColor(cls.subjects[0] ?? cls.className)
           return (
-            <Link
+            // ── plain div, not Link — avoids nested <a> hydration error
+            <div
               key={cls.classId}
-              href={`/teacher/classes/${cls.classId}/students`}
+              onClick={() => router.push(`/teacher/classes/${cls.classId}/students`)}
+              className="bg-white border border-[#e7e5e4] rounded-2xl overflow-hidden
+                         hover:border-[#0d9488] hover:shadow-sm transition-all
+                         cursor-pointer group"
+              style={{ animationDelay: `${i * 40}ms` }}
             >
-              <div
-                className="bg-white border border-[#e7e5e4] rounded-2xl overflow-hidden
-                           hover:border-[#0d9488] hover:shadow-sm transition-all
-                           cursor-pointer group"
-                style={{ animationDelay: `${i * 40}ms` }}
-              >
-                {/* Color bar */}
-                <div className="h-1.5 w-full" style={{ background: primary }} />
+              {/* Color bar */}
+              <div className="h-1.5 w-full" style={{ background: primary }} />
 
-                <div className="p-5">
-                  {/* Class name */}
-                  <div className="flex items-start justify-between mb-3">
-                    <h2 className="text-[16px] font-bold text-[#0f2027]
-                                   group-hover:text-[#0d9488] transition-colors">
-                      {cls.className}
-                    </h2>
-                    <svg
-                      className="w-4 h-4 text-[#d4d0cb] group-hover:text-[#0d9488]
-                                 transition-colors mt-0.5 shrink-0"
-                      fill="none" viewBox="0 0 24 24"
-                      stroke="currentColor" strokeWidth={2}
+              <div className="p-5">
+                {/* Class name */}
+                <div className="flex items-start justify-between mb-3">
+                  <h2 className="text-[16px] font-bold text-[#0f2027]
+                                 group-hover:text-[#0d9488] transition-colors">
+                    {cls.className}
+                  </h2>
+                  <svg
+                    className="w-4 h-4 text-[#d4d0cb] group-hover:text-[#0d9488]
+                               transition-colors mt-0.5 shrink-0"
+                    fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+
+                {/* Subject pills */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {cls.subjects.map(s => (
+                    <span
+                      key={s}
+                      className="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
+                      style={{
+                        background:  subjectColor(s) + "15",
+                        borderColor: subjectColor(s) + "40",
+                        color:       subjectColor(s),
+                      }}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
+                      {s}
+                    </span>
+                  ))}
+                </div>
 
-                  {/* Subject pills */}
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {cls.subjects.map(s => (
-                      <span
-                        key={s}
-                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
-                        style={{
-                          background:  subjectColor(s) + "15",
-                          borderColor: subjectColor(s) + "40",
-                          color:       subjectColor(s),
-                        }}
-                      >
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Footer links */}
-                  <div className="flex items-center gap-3 pt-3 border-t border-[#f0efed]">
-                    {[
-                      { label: "Students", seg: "students" },
-                      { label: "Marks",    seg: "marks"    },
-                      { label: "Reports",  seg: "reports"  },
-                    ].map(tab => (
-                      <Link
-                        key={tab.seg}
-                        href={`/teacher/classes/${cls.classId}/${tab.seg}`}
-                        onClick={e => e.stopPropagation()}
-                        className="text-[11px] font-medium text-[#a8a29e]
-                                   hover:text-[#0d9488] transition-colors"
-                      >
-                        {tab.label}
-                      </Link>
-                    ))}
-                  </div>
+                {/* Footer tab links — these are the only <a> tags, no nesting */}
+                <div
+                  className="flex items-center gap-3 pt-3 border-t border-[#f0efed]"
+                  onClick={e => e.stopPropagation()} // prevent card click when clicking tabs
+                >
+                  {[
+                    { label: "Students", seg: "students" },
+                    { label: "Marks",    seg: "marks"    },
+                    { label: "Reports",  seg: "reports"  },
+                  ].map(tab => (
+                    <Link
+                      key={tab.seg}
+                      href={`/teacher/classes/${cls.classId}/${tab.seg}`}
+                      className="text-[11px] font-medium text-[#a8a29e]
+                                 hover:text-[#0d9488] transition-colors"
+                    >
+                      {tab.label}
+                    </Link>
+                  ))}
                 </div>
               </div>
-            </Link>
+            </div>
           )
         })}
       </div>

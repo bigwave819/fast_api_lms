@@ -9,8 +9,10 @@ export default async function ClassLayout({
   params,
 }: {
   children: React.ReactNode
-  params: { classId: string }
+  params: Promise<{ classId: string }>
 }) {
+  const { classId } = await params
+
   const store = await cookies()
   const token = store.get("access_token")?.value
   if (!token) redirect("/auth/login")
@@ -18,7 +20,6 @@ export default async function ClassLayout({
   const payload = JSON.parse(atob(token.split(".")[1]))
   if (payload.role !== "teacher") redirect("/auth/login")
 
-  // Fetch all assignments to find this class's details
   const res = await fetch(`${BACKEND}/teachers/me/classes`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
@@ -27,19 +28,20 @@ export default async function ClassLayout({
 
   const assignments = await res.json()
 
-  // Find assignments for this classId
   const classAssignments = assignments.filter(
-    (a: { class_id: string }) => a.class_id === params.classId
+    (a: { class_id: string }) => a.class_id === classId
   )
   if (classAssignments.length === 0) redirect("/teacher/classes")
 
-  const className   = classAssignments[0].class_name
-  const subjects    = classAssignments.map((a: { subject_name: string }) => a.subject_name)
+  const className = classAssignments[0].class_name
+  const subjects  = classAssignments.map(
+    (a: { subject_name: string }) => a.subject_name
+  )
 
   return (
     <div className="min-h-screen bg-[#fafaf9]">
       <ClassTabNav
-        classId={params.classId}
+        classId={classId}
         className={className}
         subjects={subjects}
       />

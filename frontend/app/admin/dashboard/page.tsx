@@ -5,8 +5,8 @@ import { AdminDashboardClient } from "@/components/admin/AdminDashboardClient"
 const BACKEND = process.env.BACKEND_URL ?? "http://localhost:8000"
 
 export const metadata = {
-  title: "Platform dashboard — Admin",
-  description: "Monitor all schools, directors and platform activity.",
+  title: "Dashboard — Admin console",
+  description: "Platform-wide overview of schools, directors and activity.",
 }
 
 export default async function AdminDashboardPage() {
@@ -17,7 +17,7 @@ export default async function AdminDashboardPage() {
   const payload = JSON.parse(atob(token.split(".")[1]))
   if (payload.role !== "platform_admin") redirect("/auth/login")
 
-  const [schoolsRes, directorsRes] = await Promise.all([
+  const [schoolsRes, directorsRes, statsRes] = await Promise.all([
     fetch(`${BACKEND}/admin/schools`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
@@ -26,15 +26,21 @@ export default async function AdminDashboardPage() {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     }),
+    fetch(`${BACKEND}/admin/stats`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    }),
   ])
 
   const schools   = schoolsRes.ok   ? await schoolsRes.json()   : []
   const directors = directorsRes.ok ? await directorsRes.json() : []
+  const stats     = statsRes.ok     ? await statsRes.json()     : null
 
   return (
     <AdminDashboardClient
       schools={schools}
       directors={directors}
+      stats={stats}
       adminName={payload.name ?? "Admin"}
     />
   )

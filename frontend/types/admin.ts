@@ -1,9 +1,8 @@
 export type School = {
-  id:           string
-  name:         string
-  is_active:    boolean
-  created_at:   string
-  director_id:  string | null
+  id:         string
+  name:       string
+  is_active:  boolean
+  created_at: string
 }
 
 export type Director = {
@@ -12,4 +11,13 @@ export type Director = {
   email:     string
   school_id: string | null
   is_active: boolean
+}
+
+export type PlatformStats = {
+  total_schools:    number
+  active_schools:   number
+  inactive_schools: number
+  total_directors:  number
+  total_teachers:   number
+  total_students:   number
 }

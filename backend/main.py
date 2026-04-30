@@ -36,6 +36,7 @@ from routers.students     import router as students_router
 from routers.marks        import router as marks_router
 from routers.reports      import router as reports_router
 from routers.dashboard    import router as dashboard_router
+from routers.admin        import router as admin_router
 
 
 # ---------------------------------------------------------------------------
@@ -202,6 +203,9 @@ app.include_router(reports_router)
 
 # Dashboards
 app.include_router(dashboard_router)
+
+# Admin Routers
+app.include_router(admin_router)
 
 
 # ---------------------------------------------------------------------------

@@ -12,11 +12,9 @@ export const NAV_ITEMS = {
   teacher: [
     { label: "Dashboard",  href: "/teacher/dashboard" },
     { label: "My classes", href: "/teacher/classes" },
-    { label: "Marks",      href: "/teacher/marks" },
-    { label: "Students",   href: "/teacher/students" },
-    { label: "Reports",    href: "/teacher/reports" },
   ],
   platform_admin: [
+    { label: "Dashboard",    href: "/admin/dashboard" },
     { label: "Schools",    href: "/admin/schools" },
     { label: "Directors",  href: "/admin/directors" },
     { label: "Billing",    href: "/admin/billing" },

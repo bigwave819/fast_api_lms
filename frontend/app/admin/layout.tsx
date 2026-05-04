@@ -15,9 +15,9 @@ export default async function AdminLayout({
   if (payload.role !== "platform_admin") redirect("/auth/login")
 
   return (
-    <div className="flex min-h-screen bg-[#080d14]">
+    <div className="flex min-h-screen bg-background text-foreground transition-colors duration-200">
       <Sidebar role="platform_admin" name={payload.name ?? "Admin"} />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 min-w-0">{children}</main>
     </div>
   )
 }

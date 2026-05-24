@@ -37,6 +37,7 @@ from routers.marks        import router as marks_router
 from routers.reports      import router as reports_router
 from routers.dashboard    import router as dashboard_router
 from routers.admin        import router as admin_router
+from routers.settings     import router as settings_router
 
 
 # ---------------------------------------------------------------------------
@@ -206,6 +207,9 @@ app.include_router(dashboard_router)
 
 # Admin Routers
 app.include_router(admin_router)
+
+#Admin Settings
+app.include_router(settings_router)
 
 
 # ---------------------------------------------------------------------------

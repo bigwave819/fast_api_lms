@@ -8,13 +8,14 @@ async function getToken() {
   return store.get("access_token")?.value
 }
 
-type Ctx = { params: { classId: string } }
+type Ctx = { params: Promise<{ classId: string }> }
 
 export async function GET(_: NextRequest, { params }: Ctx) {
+  const { classId } = await params
   const token = await getToken()
 
   const res = await fetch(
-    `${BACKEND}/classes/${params.classId}/students`,
+    `${BACKEND}/classes/${classId}/students`,
     {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
@@ -24,11 +25,12 @@ export async function GET(_: NextRequest, { params }: Ctx) {
 }
 
 export async function POST(req: NextRequest, { params }: Ctx) {
+  const { classId } = await params
   const token = await getToken()
   const body  = await req.json()
 
   const res = await fetch(
-    `${BACKEND}/classes/${params.classId}/students`,
+    `${BACKEND}/classes/${classId}/students`,
     {
       method: "POST",
       headers: {

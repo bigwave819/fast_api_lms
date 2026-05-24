@@ -3,15 +3,16 @@ import { cookies } from "next/headers"
 
 const BACKEND = process.env.BACKEND_URL ?? "http://localhost:8000"
 
-type Ctx = { params: { assignmentId: string } }
+type Ctx = { params: Promise<{ assignmentId: string }> }
 
 export async function DELETE(req: NextRequest, { params }: Ctx) {
+  const { assignmentId } = await params
   const store = await cookies()
   const token = store.get("access_token")?.value
   const schoolId = req.nextUrl.searchParams.get("schoolId")
 
   const res = await fetch(
-    `${BACKEND}/schools/${schoolId}/assignments/${params.assignmentId}`,
+    `${BACKEND}/schools/${schoolId}/assignments/${assignmentId}`,
     { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
   )
 

@@ -8,13 +8,14 @@ async function getToken() {
   return store.get("access_token")?.value
 }
 
-type Ctx = { params: { classId: string } }
+type Ctx = { params: Promise<{ classId: string }> }
 
 export async function PATCH(req: NextRequest, { params }: Ctx) {
+  const { classId } = await params
   const token = await getToken()
   const { schoolId, ...body } = await req.json()
 
-  const res = await fetch(`${BACKEND}/schools/${schoolId}/classes/${params.classId}`, {
+  const res = await fetch(`${BACKEND}/schools/${schoolId}/classes/${classId}`, {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -23,10 +24,11 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
 }
 
 export async function DELETE(req: NextRequest, { params }: Ctx) {
+  const { classId } = await params
   const token = await getToken()
   const schoolId = req.nextUrl.searchParams.get("schoolId")
 
-  const res = await fetch(`${BACKEND}/schools/${schoolId}/classes/${params.classId}`, {
+  const res = await fetch(`${BACKEND}/schools/${schoolId}/classes/${classId}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   })

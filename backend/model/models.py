@@ -11,7 +11,7 @@ from typing import Optional, List
 from sqlalchemy import (
     Column, String, Boolean, Integer,DECIMAL as Decimal,
     ForeignKey, Text, Date, Enum as SAEnum,
-    UniqueConstraint, Index
+    UniqueConstraint, Index, JSON
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, DeclarativeBase
@@ -401,3 +401,19 @@ class QuizSubmission(UUIDMixin, Base):
 
     quiz:    "Quiz"    = relationship("Quiz",    back_populates="submissions")
     student: "Student" = relationship("Student")
+
+
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+
+class PlatformSettings(Base):
+    __tablename__ = "platform_settings"
+
+    id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    platform_name           = Column(String, nullable=False, default="EduPlatform")
+    default_academic_year   = Column(String, nullable=False)
+    default_term_names      = Column(JSON,   nullable=False, default=["Term 1","Term 2","Term 3"])
+    default_exam_types      = Column(JSON,   nullable=False, default=["CAT","MID","FINAL","PRACTICAL","ASSIGNMENT"])
+    default_max_score       = Column(Integer, nullable=False, default=100)
+    support_email           = Column(String, nullable=True)
+    max_students_per_class  = Column(Integer, nullable=True)

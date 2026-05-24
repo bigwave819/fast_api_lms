@@ -8,11 +8,12 @@ async function getToken() {
   return store.get("access_token")?.value
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { teacherId: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ teacherId: string }> }) {
+  const { teacherId } = await params
   const token = await getToken()
   const { schoolId, ...body } = await req.json()
 
-  const res = await fetch(`${BACKEND}/schools/${schoolId}/teachers/${params.teacherId}`, {
+  const res = await fetch(`${BACKEND}/schools/${schoolId}/teachers/${teacherId}`, {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -21,13 +22,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { teacherId:
   return NextResponse.json(data, { status: res.status })
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { teacherId: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ teacherId: string }> }) {
+  const { teacherId } = await params
   const token = await getToken()
   const store = await cookies()
   const payload = JSON.parse(atob(store.get("access_token")!.value.split(".")[1]))
 
   const res = await fetch(
-    `${BACKEND}/schools/${payload.school_id}/teachers/${params.teacherId}`,
+    `${BACKEND}/schools/${payload.school_id}/teachers/${teacherId}`,
     { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
   )
   return new NextResponse(null, { status: res.status })

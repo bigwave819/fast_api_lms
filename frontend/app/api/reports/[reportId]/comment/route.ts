@@ -3,15 +3,16 @@ import { cookies } from "next/headers"
 
 const BACKEND = process.env.BACKEND_URL ?? "http://localhost:8000"
 
-type Ctx = { params: { reportId: string } }
+type Ctx = { params: Promise<{ reportId: string }> }
 
 export async function PATCH(req: NextRequest, { params }: Ctx) {
+  const { reportId } = await params
   const store = await cookies()
   const token = store.get("access_token")?.value
   const body  = await req.json()
 
   const res = await fetch(
-    `${BACKEND}/reports/${params.reportId}/comment`,
+    `${BACKEND}/reports/${reportId}/comment`,
     {
       method: "PATCH",
       headers: {

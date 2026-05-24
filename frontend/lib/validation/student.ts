@@ -12,7 +12,7 @@ export const studentSchema = z.object({
     .refine(v => new Date(v) < new Date(), "Date of birth must be in the past"),
 
   gender: z.enum(["M", "F", "Other"], {
-    required_error: "Please select a gender",
+    message: "Please select a gender",
   }),
 
   guardian_name: z

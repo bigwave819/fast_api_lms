@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const schoolSchema = z.object({
   name:      z.string().min(2, "At least 2 characters").max(100),
-  is_active: z.boolean().default(true),
+  is_active: z.boolean(),
 })
 
 export const directorSchema = z.object({
